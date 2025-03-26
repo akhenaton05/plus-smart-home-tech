@@ -1,8 +1,6 @@
 package ru.yandex.practicum.collector.service.handler.hub.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.collector.event.hub.ConditionOperation;
-import ru.yandex.practicum.collector.event.hub.ConditionType;
 import ru.yandex.practicum.collector.event.hub.ScenarioCondition;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
@@ -10,11 +8,12 @@ import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class ConditionsMapper {
     public static ScenarioConditionAvro eventToAvro(ScenarioCondition scenario) {
-        if (scenario == null) {
+        if (Objects.isNull(scenario)) {
             throw new IllegalArgumentException("ScenarioCondition cannot be null");
         }
 
@@ -44,7 +43,7 @@ public class ConditionsMapper {
     }
 
     public static List<ScenarioConditionAvro> condListToAvro(List<ScenarioCondition> conditions) {
-        if (conditions == null || conditions.isEmpty()) {
+        if (Objects.isNull(conditions) || conditions.isEmpty()) {
             return Collections.emptyList();
         }
 

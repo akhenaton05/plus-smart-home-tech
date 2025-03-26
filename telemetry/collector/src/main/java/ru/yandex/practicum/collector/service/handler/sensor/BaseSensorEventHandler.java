@@ -34,7 +34,6 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> imple
                 .setPayload(payload)
                 .build();
 
-        System.out.println("EVENT ABRO " + eventAvro);
         log.info("Sending SensorEventAvro to Kafka: id={}", event.getId());
         producer.send(TopicType.SENSOR_EVENTS, eventAvro);
     }

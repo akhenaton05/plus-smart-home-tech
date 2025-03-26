@@ -11,6 +11,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.collector.config.KafkaConfig;
 
+import java.util.Objects;
 import java.util.Properties;
 
 @Component
@@ -22,11 +23,11 @@ public class KafkaEventImpl implements KafkaClient {
     @PostConstruct
     public void init() {
 
-        if (kafkaConfig == null) {
+        if (Objects.isNull(kafkaConfig)) {
             throw new IllegalStateException("kafkaConfig не был внедрен Spring'ом!");
         }
 
-        if (kafkaConfig.getProducer() == null) {
+        if (Objects.isNull(kafkaConfig.getProducer())) {
             throw new IllegalStateException("KafkaConfig.getProducer() вернул null");
         }
 
@@ -46,7 +47,7 @@ public class KafkaEventImpl implements KafkaClient {
     @Override
     @PreDestroy
     public void stop() {
-        if (producer != null) {
+        if (Objects.nonNull(producer)) {
             producer.close();
         }
     }

@@ -10,6 +10,7 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class AvroSerializer implements Serializer<SpecificRecordBase> {
     private final EncoderFactory encoderFactory = EncoderFactory.get();
@@ -19,7 +20,7 @@ public class AvroSerializer implements Serializer<SpecificRecordBase> {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             byte[] result = null;
             encoder = encoderFactory.binaryEncoder(out, encoder);
-            if (data != null) {
+            if (Objects.nonNull(data)) {
                 DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
                 writer.write(data, encoder);
                 encoder.flush();

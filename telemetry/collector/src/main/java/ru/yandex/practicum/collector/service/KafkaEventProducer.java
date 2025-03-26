@@ -10,6 +10,7 @@ import ru.yandex.practicum.collector.event.TopicType;
 import ru.yandex.practicum.collector.service.handler.KafkaClient;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class KafkaEventProducer {
         log.trace("\nKafkaEventProducer: event {}", event);
 
         String topic = kafkaConfig.getProducer().getTopics().get(topicType);
-        if (topic == null) {
+        if (Objects.isNull(topic)) {
             throw new IllegalArgumentException("Unknown topic type: " + topicType);
         }
 
