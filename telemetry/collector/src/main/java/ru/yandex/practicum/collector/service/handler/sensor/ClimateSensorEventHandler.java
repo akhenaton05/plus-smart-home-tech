@@ -1,12 +1,10 @@
 package ru.yandex.practicum.collector.service.handler.sensor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.collector.event.sensor.ClimateSensorEvent;
-import ru.yandex.practicum.collector.event.sensor.SensorEvent;
-import ru.yandex.practicum.collector.event.sensor.SensorEventType;
 import ru.yandex.practicum.collector.service.KafkaEventProducer;
+import ru.yandex.practicum.grpc.telemetry.event.ClimateSensorProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.ClimateSensorAvro;
 
 @Service
@@ -18,8 +16,8 @@ public class ClimateSensorEventHandler extends BaseSensorEventHandler<ClimateSen
     }
 
     @Override
-    protected ClimateSensorAvro mapToAvro(SensorEvent event) {
-        ClimateSensorEvent _event = (ClimateSensorEvent) event;
+    protected ClimateSensorAvro mapToAvro(SensorEventProto event) {
+        ClimateSensorProto _event = event.getClimateSensorEvent();
 
         return ClimateSensorAvro.newBuilder()
                 .setCo2Level(_event.getCo2Level())
@@ -29,7 +27,7 @@ public class ClimateSensorEventHandler extends BaseSensorEventHandler<ClimateSen
     }
 
     @Override
-    public SensorEventType getMessageType() {
-        return SensorEventType.CLIMATE_SENSOR_EVENT;
+    public SensorEventProto.PayloadCase getMessageType() {
+        return SensorEventProto.PayloadCase.CLIMATE_SENSOR_EVENT;
     }
 }
