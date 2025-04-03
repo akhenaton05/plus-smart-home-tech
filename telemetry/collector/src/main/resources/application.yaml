@@ -1,9 +1,8 @@
 spring:
   application:
     name: collector
-
-server:
-  port: 8080
+  main:
+    web-application-type: none
 
 grpc:
   server:
