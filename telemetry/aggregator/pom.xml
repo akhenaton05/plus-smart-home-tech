@@ -107,7 +107,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.yandex.practicum.collector.Collector</mainClass>
+                            <mainClass>ru.yandex.practicum.aggregator.Aggregator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
