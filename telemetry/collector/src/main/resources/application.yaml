@@ -11,9 +11,6 @@ grpc:
     collector: # Добавляем конфигурацию для клиента "collector"
       address: static://localhost:59091
       negotiationType: plaintext
-    analytics:
-      address: static://localhost:9091
-      negotiationType: plaintext
 
 logging:
   level:

@@ -37,11 +37,11 @@
             <artifactId>grpc-protobuf</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
             <version>3.1.0.RELEASE</version>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>net.devh</groupId>
