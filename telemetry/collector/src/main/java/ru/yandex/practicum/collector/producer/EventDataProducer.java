@@ -20,8 +20,8 @@ public class EventDataProducer {
     private static final Random random = new Random();
     private final SensorConfig sensorConfig;
 
-    @GrpcClient("collector")
-    private CollectorControllerGrpc.CollectorControllerBlockingStub collectorStub;
+//    @GrpcClient("collector")
+//    private CollectorControllerGrpc.CollectorControllerBlockingStub collectorStub;
 
     @Scheduled(fixedRate = 10000)
     public void emulateEvents() {
@@ -185,7 +185,7 @@ public class EventDataProducer {
     private void sendSensorEvent(SensorEventProto event) {
         log.info("Sending sensor event: id={}, type={}", event.getId(), event.getPayloadCase());
         try {
-            collectorStub.collectSensorEvent(event);
+//            collectorStub.collectSensorEvent(event);
             log.info("Successfully sent sensor event: id={}", event.getId());
         } catch (Exception e) {
             log.error("Failed to send sensor event: id={}, error={}", event.getId(), e.getMessage(), e);
