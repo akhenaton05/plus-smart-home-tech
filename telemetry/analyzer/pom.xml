@@ -60,11 +60,7 @@
             <version>3.4.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>net.devh</groupId>
-            <artifactId>grpc-spring-boot-starter</artifactId>
-            <version>3.1.0.RELEASE</version>
-        </dependency>
+
 
         <dependency>
             <groupId>net.devh</groupId>
@@ -81,6 +77,7 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
+            <version>1.63.0</version>
         </dependency>
 
         <dependency>

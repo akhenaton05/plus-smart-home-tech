@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "actions")
 @Data
@@ -23,4 +26,8 @@ public class Action {
 
     @Column(name = "value")
     private Integer value;
+
+    @OneToMany(mappedBy = "action", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ScenarioAction> scenarioActions = new ArrayList<>();
 }

@@ -16,20 +16,18 @@ public class ScenarioCondition {
     @ManyToOne
     @MapsId("scenarioId")
     @JoinColumn(name = "scenario_id")
+    @ToString.Exclude
     private Scenario scenario;
 
     @ManyToOne
     @MapsId("sensorId")
     @JoinColumn(name = "sensor_id")
+    @ToString.Exclude
     private Sensor sensor;
 
     @ManyToOne
     @MapsId("conditionId")
     @JoinColumn(name = "condition_id")
+    @ToString.Exclude
     private Condition condition;
-
-    @Override
-    public String toString() {
-        return "ScenarioCondition(id=" + id + ", condition=" + condition + ", sensor=" + sensor + ")";
-    }
 }

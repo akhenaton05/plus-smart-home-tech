@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "conditions")
 @Data
@@ -27,4 +30,8 @@ public class Condition {
 
     @Column(name = "value")
     Integer value;
+
+    @OneToMany(mappedBy = "condition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ScenarioCondition> scenarioConditions = new ArrayList<>();
 }

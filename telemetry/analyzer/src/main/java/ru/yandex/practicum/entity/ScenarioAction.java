@@ -1,10 +1,7 @@
 package ru.yandex.practicum.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "scenario_actions")
@@ -19,16 +16,19 @@ public class ScenarioAction {
     @ManyToOne
     @MapsId("scenarioId")
     @JoinColumn(name = "scenario_id")
+    @ToString.Exclude
     private Scenario scenario;
 
     @ManyToOne
     @MapsId("sensorId")
     @JoinColumn(name = "sensor_id")
+    @ToString.Exclude
     private Sensor sensor;
 
     @ManyToOne
     @MapsId("actionId")
     @JoinColumn(name = "action_id")
+    @ToString.Exclude
     private Action action;
 }
 

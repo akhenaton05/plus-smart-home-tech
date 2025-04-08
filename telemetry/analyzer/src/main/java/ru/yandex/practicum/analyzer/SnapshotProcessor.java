@@ -1,5 +1,6 @@
 package ru.yandex.practicum.analyzer;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +26,19 @@ public class SnapshotProcessor {
     private final SnapshotServiceImpl snapshotService;
     private volatile boolean running = true;
 
+    @PostConstruct
+    public void init() {
+        Thread thread = new Thread(this::start, "SnapshotProcessorThread");
+        thread.start();
+    }
+
     public void start() {
         try {
             consumer.subscribe(Collections.singletonList(kafkaConfig.getSnapshotConsumer().getTopic()));
             log.info("Subscribed to topic: {}", kafkaConfig.getSnapshotConsumer().getTopic());
 
             while (running) {
-                ConsumerRecords<String, SensorsSnapshotAvro> records = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, SensorsSnapshotAvro> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
                     SensorsSnapshotAvro snapshot = record.value();
                     log.debug("Received event: {}", snapshot);

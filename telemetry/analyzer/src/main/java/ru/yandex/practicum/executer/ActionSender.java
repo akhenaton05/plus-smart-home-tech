@@ -1,5 +1,6 @@
 package ru.yandex.practicum.executer;
 
+import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import lombok.AccessLevel;
@@ -7,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.entity.Action;
 import ru.yandex.practicum.entity.Scenario;
@@ -31,6 +31,7 @@ public class ActionSender {
     HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
 
     public void send(Scenario scenario, SensorsSnapshotAvro snapshot) {
+        log.info("gRPC client target address: {}", hubRouterClient.getChannel().authority());
         String hubId = snapshot.getHubId();
         List<ScenarioAction> actions = scenario.getActions();
 
@@ -51,6 +52,8 @@ public class ActionSender {
                     .setValue(action.getValue() != null ? action.getValue() : null)
                     .build();
 
+            log.info("Action type: {}, ActionTypeProto: {}", action.getType(), ActionTypeProto.valueOf(action.getType().toString()));
+
             log.info("actionProto - sensorId: {}, type: {}, value: {}",
                     actionProto.getSensorId(), actionProto.getType(), actionProto.getValue());
             //System.out.println("actionProto " + actionProto);
@@ -70,17 +73,22 @@ public class ActionSender {
                     request.getHubId(), request.getScenarioName(),
                     request.getAction().getSensorId(), request.getAction().getType(), request.getAction().getValue());
 
-            //System.out.println("request " + request);
-
             try {
-                hubRouterClient.handleDeviceAction(request);
+                log.info("Before sending gRPC request at: {}", Instant.now());
+                Empty response = hubRouterClient.handleDeviceAction(request);
+                log.info("After sending gRPC request at: {}", Instant.now());
+                if (response != null) {
+                    log.info("Sent action for scenario {}: sensorId={}, type={}, value={}",
+                            scenario.getName(), scenarioAction.getSensor().getId(), action.getType(),
+                            action.getValue() != null ? action.getValue() : "none");
+                } else {
+                    log.warn("В результате отправки action {} на hubId {} пришел ответ null", action, hubId);
+                }
             } catch (StatusRuntimeException e) {
-                log.error("Failed to send action to HubRouterController: {}", e.getMessage());
+                log.error("Отправка действия action {} на hubId {} завершилась неудачей", action, hubId);
+                throw new RuntimeException(
+                        "Отправка действия action " + action + "на hubId " + hubId + " завершилась неудачей", e);
             }
-
-            log.info("Sent action for scenario {}: sensorId={}, type={}, value={}",
-                    scenario.getName(), scenarioAction.getSensor().getId(), action.getType(),
-                    action.getValue() != null ? action.getValue() : "none");
         }
     }
 }

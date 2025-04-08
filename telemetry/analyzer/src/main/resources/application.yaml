@@ -5,6 +5,14 @@ logging:
       springframework: ERROR
       apache.kafka: WARN
 
+grpc:
+  client:
+    hub-router:
+      address: static://localhost:59090
+      enable-keep-alive: true
+      keep-alive-without-calls: true
+      negotiation-type: plaintext
+
 spring:
   main:
     web-application-type: none
@@ -37,16 +45,8 @@ analyzer:
       properties:
         bootstrap.servers: localhost:9092
         group.id: analyzer-snapshots
-        auto.offset.reset: latest
+        auto.offset.reset: earliest
         enable.auto.commit: false
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.yandex.practicum.serializer.SensorSnapshotDeserializer
       topic: telemetry.snapshots.v1
-
-grpc:
-  client:
-    hub-router:
-      address: 'static://localhost:59090'
-      enable-keep-alive: true
-      keep-alive-without-calls: true
-      negotiation-type: plaintext

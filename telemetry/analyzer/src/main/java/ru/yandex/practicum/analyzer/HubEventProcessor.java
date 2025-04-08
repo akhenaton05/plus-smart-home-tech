@@ -1,5 +1,6 @@
 package ru.yandex.practicum.analyzer;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,20 +27,25 @@ import java.util.Collections;
 public class HubEventProcessor implements Runnable {
 
     private final KafkaConfig kafkaConfig;
-    private Consumer<String, HubEventAvro> consumer;
+    private final KafkaConsumer<String, HubEventAvro> consumer;
     private final SensorService sensorService;
     private final ScenarioService scenarioService;
     private volatile boolean running = true;
 
+    @PostConstruct
+    public void init() {
+        Thread thread = new Thread(this, "HubEventHandlerThread");
+        thread.start();
+    }
+
     @Override
     public void run() {
         try {
-            consumer = new KafkaConsumer<>(kafkaConfig.getHubConsumer().getProperties());
             consumer.subscribe(Collections.singletonList(kafkaConfig.getHubConsumer().getTopic()));
             log.info("Subscribed to topic: {}", kafkaConfig.getHubConsumer().getTopic());
 
             while (running) {
-                ConsumerRecords<String, HubEventAvro> records = consumer.poll(1000);
+                ConsumerRecords<String, HubEventAvro> records = consumer.poll(100);
                 for (ConsumerRecord<String, HubEventAvro> record : records) {
                     HubEventAvro event = record.value();
                     log.debug("Received event: {}", event);

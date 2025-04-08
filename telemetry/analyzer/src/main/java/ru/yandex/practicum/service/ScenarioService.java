@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.entity.*;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceActionAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.repository.ConditionRepository;
 import ru.yandex.practicum.repository.ScenarioRepository;
 import ru.yandex.practicum.repository.SensorRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,21 +27,26 @@ public class ScenarioService {
     private final ConditionRepository conditionRepository;
     private final ActionRepository actionRepository;
 
+    @Transactional
     public void saveEvent(ScenarioAddedEventAvro event, String hubId) {
-        Scenario scenario = Scenario.builder()
-                .hubId(hubId)
-                .name(event.getName())
-                .build();
+        Scenario scenario = scenarioRepository.findByHubIdAndName(hubId, event.getName())
+                .orElseGet(() -> Scenario.builder()
+                        .hubId(hubId)
+                        .name(event.getName())
+                        .conditions(new ArrayList<>()) // Инициализируем изменяемую коллекцию
+                        .actions(new ArrayList<>())   // Инициализируем изменяемую коллекцию
+                        .build());
 
-        scenarioRepository.save(scenario);
+        // Заполняем условия и действия
+        scenario.getConditions().addAll(conditionHandle(event.getConditions(), hubId, scenario));
+        scenario.getActions().addAll(actionHandle(event.getActions(), hubId, scenario));
 
-        scenario.setConditions(conditionHandle(event.getConditions(), hubId, scenario));
-        scenario.setActions(actionHandle(event.getActions(), hubId, scenario));
-
+        // Сохраняем сценарий с каскадным сохранением условий и действий
         scenarioRepository.save(scenario);
         log.info("Added scenario: name={}, hubId={}", event.getName(), hubId);
     }
 
+    @Transactional
     public void removeEvent(ScenarioRemovedEventAvro event, String hubId) {
         Scenario scenario = scenarioRepository.findByHubIdAndName(hubId, event.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Scenario was not found"));
