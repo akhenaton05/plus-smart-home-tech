@@ -22,7 +22,7 @@ public class Action {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    DeviceActionType type;
+    private DeviceActionType type;
 
     @Column(name = "value")
     private Integer value;

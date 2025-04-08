@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScenarioConditionId {
-    Long scenarioId;
-    String sensorId;
-    Long conditionId;
+    private Long scenarioId;
+    private String sensorId;
+    private Long conditionId;
 }

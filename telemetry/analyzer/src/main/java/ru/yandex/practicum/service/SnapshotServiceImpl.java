@@ -22,21 +22,14 @@ public class SnapshotServiceImpl {
     private final ActionSender actionSender;
 
     @Transactional(readOnly = true)
-    public void processSnapshot(SensorsSnapshotAvro snapshot) {
+    public void processSnapshot(SensorsSnapshotAvro snapshot) throws InterruptedException {
         log.info("Processing snapshot for hubId: {}", snapshot.getHubId());
         log.info("Available sensors in snapshot: {}", snapshot.getSensorsState());
         List<Scenario> scenarioList = scenarioRepository.findByHubId(snapshot.getHubId());
+
         for (Scenario scenario : scenarioList) {
-            System.out.println("Scenario: " + scenario.getName());
-            System.out.println("Conditions size: " + (scenario.getConditions() != null ? scenario.getConditions().size() : "null"));
-            System.out.println("Actions size: " + (scenario.getActions() != null ? scenario.getActions().size() : "null"));
-        }
-        System.out.println("SCENARIO LIST " + scenarioList);
-        for (Scenario scenario : scenarioList) {
-            System.out.println("SCENARIO HUBID " + scenario.getHubId());
             if (checkConditions(scenario, snapshot)) {
-                System.out.println("SUCCESS " + scenario + " ||||| " + snapshot);
-                sendAction(scenario, snapshot);
+                actionSender.send(scenario, snapshot);
             }
         }
     }
@@ -118,18 +111,11 @@ public class SnapshotServiceImpl {
             log.info("Target value is null for operation {}", operation);
             return false;
         }
-        log.info("SENSOR VALUE: {}", sensorValue);
-        log.info("OPERATION: {}", operation);
-        log.info("TARGET VALUE: {}", targetValue);
+
         return switch (operation) {
             case EQUALS -> sensorValue == targetValue;
             case GREATER_THAN -> sensorValue > targetValue;
             case LOWER_THAN -> sensorValue < targetValue;
         };
-    }
-
-    private void sendAction(Scenario scenario, SensorsSnapshotAvro snapshot) {
-        actionSender.send(scenario, snapshot);
-        log.info("scenario send {} on hub {}", scenario.getId(), snapshot.getHubId());
     }
 }

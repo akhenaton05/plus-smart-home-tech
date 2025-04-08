@@ -33,15 +33,13 @@ public class ScenarioService {
                 .orElseGet(() -> Scenario.builder()
                         .hubId(hubId)
                         .name(event.getName())
-                        .conditions(new ArrayList<>()) // Инициализируем изменяемую коллекцию
-                        .actions(new ArrayList<>())   // Инициализируем изменяемую коллекцию
+                        .conditions(new ArrayList<>())
+                        .actions(new ArrayList<>())
                         .build());
 
-        // Заполняем условия и действия
         scenario.getConditions().addAll(conditionHandle(event.getConditions(), hubId, scenario));
         scenario.getActions().addAll(actionHandle(event.getActions(), hubId, scenario));
 
-        // Сохраняем сценарий с каскадным сохранением условий и действий
         scenarioRepository.save(scenario);
         log.info("Added scenario: name={}, hubId={}", event.getName(), hubId);
     }
@@ -65,7 +63,7 @@ public class ScenarioService {
                     if (conditionValue == null) {
                         log.warn("Condition value is null for sensorId: {}, type: {}, operation: {}",
                                 c.getSensorId(), c.getType(), c.getOperation());
-                        return null; // Пропускаем условие, если значение не удалось преобразовать
+                        return null;
                     }
 
                     Condition condition = Condition.builder()
@@ -102,7 +100,7 @@ public class ScenarioService {
                     if (actionValue == null) {
                         log.warn("Action value is null for sensorId: {}, type: {}",
                                 a.getSensorId(), a.getType());
-                        return null; // Пропускаем действие, если значение не удалось преобразовать
+                        return null;
                     }
 
                     Action action = Action.builder()

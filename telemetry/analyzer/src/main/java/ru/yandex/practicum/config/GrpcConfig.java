@@ -24,7 +24,8 @@ public class GrpcConfig {
     }
 
     @Bean
-    public HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterStub(ManagedChannel channel) {
-        return HubRouterControllerGrpc.newBlockingStub(channel);
+    public HubRouterControllerGrpc.HubRouterControllerStub hubRouterStub(ManagedChannel channel) {
+        log.info("Creating asynchronous gRPC stub for HubRouterController");
+        return HubRouterControllerGrpc.newStub(channel);
     }
 }

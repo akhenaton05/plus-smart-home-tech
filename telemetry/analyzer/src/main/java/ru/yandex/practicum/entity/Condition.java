@@ -22,14 +22,14 @@ public class Condition {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    ConditionType type;
+    private ConditionType type;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "operation", nullable = false)
-    ConditionOperationType operation;
+    private ConditionOperationType operation;
 
     @Column(name = "value")
-    Integer value;
+    private Integer value;
 
     @OneToMany(mappedBy = "condition", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
