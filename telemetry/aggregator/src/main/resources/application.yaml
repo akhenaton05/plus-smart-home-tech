@@ -7,7 +7,7 @@ logging:
     ru.yandex.practicum.telemetry: TRACE
     org:
       springframework: ERROR
-      apache.kafka: WARN
+      apache.kafka: INFO
 
 aggregator:
   kafka:
