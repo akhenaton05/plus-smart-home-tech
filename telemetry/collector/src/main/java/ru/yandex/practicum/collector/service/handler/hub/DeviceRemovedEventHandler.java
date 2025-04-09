@@ -2,8 +2,9 @@ package ru.yandex.practicum.collector.service.handler.hub;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.collector.event.hub.*;
 import ru.yandex.practicum.collector.service.KafkaEventProducer;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceRemovedEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 
 @Service
@@ -14,8 +15,8 @@ public class DeviceRemovedEventHandler extends BaseHubEventHandler<DeviceRemoved
     }
 
     @Override
-    protected DeviceRemovedEventAvro mapToAvro(HubEvent event) {
-        DeviceRemovedEvent _event = (DeviceRemovedEvent) event;
+    protected DeviceRemovedEventAvro mapToAvro(HubEventProto event) {
+        DeviceRemovedEventProto _event = event.getDeviceRemoved();
 
         return DeviceRemovedEventAvro.newBuilder()
                 .setId(_event.getId())
@@ -23,7 +24,7 @@ public class DeviceRemovedEventHandler extends BaseHubEventHandler<DeviceRemoved
     }
 
     @Override
-    public HubEventType getMessageType() {
-        return HubEventType.DEVICE_REMOVED;
+    public HubEventProto.PayloadCase getMessageType() {
+        return HubEventProto.PayloadCase.DEVICE_REMOVED;
     }
 }
