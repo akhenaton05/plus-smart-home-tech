@@ -2,10 +2,9 @@ package ru.yandex.practicum.collector.service.handler.sensor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.collector.event.sensor.SensorEvent;
-import ru.yandex.practicum.collector.event.sensor.SensorEventType;
-import ru.yandex.practicum.collector.event.sensor.TemperatureSensorEvent;
 import ru.yandex.practicum.collector.service.KafkaEventProducer;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.TemperatureSensorProto;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
 
 @Service
@@ -17,8 +16,8 @@ public class TemperatureSensorEventHandler extends BaseSensorEventHandler<Temper
     }
 
     @Override
-    protected TemperatureSensorAvro mapToAvro(SensorEvent event) {
-        TemperatureSensorEvent _event = (TemperatureSensorEvent) event;
+    protected TemperatureSensorAvro mapToAvro(SensorEventProto event) {
+        TemperatureSensorProto _event = event.getTemperatureSensorEvent();
 
         return TemperatureSensorAvro.newBuilder()
                 .setTemperatureC(_event.getTemperatureC())
@@ -27,7 +26,7 @@ public class TemperatureSensorEventHandler extends BaseSensorEventHandler<Temper
     }
 
     @Override
-    public SensorEventType getMessageType() {
-        return SensorEventType.TEMPERATURE_SENSOR_EVENT;
+    public SensorEventProto.PayloadCase getMessageType() {
+        return SensorEventProto.PayloadCase.TEMPERATURE_SENSOR_EVENT;
     }
 }
