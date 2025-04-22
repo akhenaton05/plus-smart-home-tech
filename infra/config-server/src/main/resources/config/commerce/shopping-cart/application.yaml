@@ -1,0 +1,37 @@
+server:
+  port: 0
+
+spring:
+  main:
+    web-application-type: servlet
+  datasource:
+    url: jdbc:postgresql://localhost:5555/commerce
+    username: commerce
+    password: commerce
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+
+resilience4j.circuitbreaker:
+  instances:
+    WarehouseClientcheckProductsShoppingCartDto:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+      permittedNumberOfCallsInHalfOpenState: 3
+      ignoreExceptions:
+        - ru.yandex.practicum.dto.cart.exception.NoProductsInShoppingCartException
+        - ru.yandex.practicum.dto.warehouse.exception.NoSpecifiedProductInWarehouseException
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG

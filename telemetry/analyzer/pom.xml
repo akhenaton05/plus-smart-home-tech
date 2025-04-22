@@ -75,8 +75,6 @@
             <version>3.4.4</version>
         </dependency>
 
-
-
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-client-spring-boot-starter</artifactId>
