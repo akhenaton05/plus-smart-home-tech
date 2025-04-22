@@ -1,20 +1,55 @@
+logging:
+  level:
+    ru.yandex.practicum.telemetry: TRACE
+    org:
+      springframework: ERROR
+      apache.kafka: WARN
+
+grpc:
+  client:
+    hub-router:
+      address: static://localhost:59090
+      enable-keep-alive: true
+      keep-alive-without-calls: true
+      negotiation-type: plaintext
+
 spring:
-  application:
-    name: analyzer
-  config:
-    import: "configserver:"
+  main:
+    web-application-type: none
+  datasource:
+    url: jdbc:postgresql://localhost:5432/smart_home
+    username: analyzer
+    password: analyzer
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    #show-sql: true #Показывать SQL-запросы в логах
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
   cloud:
     config:
-      discovery:
-        enabled: true
-        serviceId: config-server
-      fail-fast: true
-      retry:
-        useRandomPolicy: true
-        max-interval: 6000
+      enabled: false
 
-eureka:
-  client:
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
+analyzer:
+  kafka:
+    hub-consumer:
+      properties:
+        bootstrap.servers: localhost:9092
+        group.id: analyzer-hubs
+        auto.offset.reset: earliest
+        enable.auto.commit: false
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.serializer.HubEventDeserializer
+      topic: telemetry.hubs.v1
+    snapshot-consumer:
+      properties:
+        bootstrap.servers: localhost:9092
+        group.id: analyzer-snapshots
+        auto.offset.reset: earliest
+        enable.auto.commit: false
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.serializer.SensorSnapshotDeserializer
+      topic: telemetry.snapshots.v1

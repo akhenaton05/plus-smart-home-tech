@@ -1,20 +1,93 @@
 spring:
   application:
     name: collector
-  config:
-    import: "configserver:"
+  main:
+    web-application-type: none
   cloud:
     config:
-      discovery:
-        enabled: true
-        serviceId: config-server
-      fail-fast: true
-      retry:
-        useRandomPolicy: true
-        max-interval: 6000
+      enabled: false
 
-eureka:
+grpc:
+  server:
+    port: 59091
   client:
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
+    collector: # Добавляем конфигурацию для клиента "collector"
+      address: static://localhost:59091
+      negotiationType: plaintext
+
+logging:
+  level:
+    ru.yandex.practicum.telemetry: TRACE
+    org:
+      springframework: ERROR
+      apache.kafka: WARN
+
+collector:
+  kafka:
+    producer:
+      properties:
+        bootstrap.servers: localhost:9092
+        client.id: collector
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: ru.yandex.practicum.kafka.collector.serializer.AvroSerializer
+      topics:
+        sensors-events: "telemetry.sensors.v1"
+        hubs-events: "telemetry.hubs.v1"
+
+sensor:
+  motionSensors:
+    - id: "motion-1"
+      linkQuality:
+        minValue: 0
+        maxValue: 100
+      voltage:
+        minValue: 0
+        maxValue: 220
+    - id: "motion-2"
+      linkQuality:
+        minValue: 50
+        maxValue: 60
+      voltage:
+        minValue: 100
+        maxValue: 220
+  switchSensors:
+    - id: "switch-1"
+  temperatureSensors:
+    - id: "temperature-1"
+      temperature:
+        minValue: -20
+        maxValue: 30
+    - id: "temperature-2"
+      temperature:
+        minValue: 0
+        maxValue: 50
+  lightSensors:
+    - id: "light-1"
+      luminosity:
+        minValue: 100
+        maxValue: 800
+    - id: "light-2"
+      luminosity:
+        minValue: 200
+        maxValue: 1000
+  climateSensors:
+    - id: "climate-1"
+      temperature:
+        minValue: 10
+        maxValue: 25
+      humidity:
+        minValue: 30
+        maxValue: 60
+      co2Level:
+        minValue: 400
+        maxValue: 1000
+    - id: "climate-2"
+      temperature:
+        minValue: 15
+        maxValue: 30
+      humidity:
+        minValue: 40
+        maxValue: 65
+      co2Level:
+        minValue: 300
+        maxValue: 800
