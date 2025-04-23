@@ -9,6 +9,7 @@ import ru.yandex.practicum.dto.store.exception.*;
 import ru.yandex.practicum.dto.cart.exception.*;
 import ru.yandex.practicum.dto.warehouse.exception.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -67,7 +68,7 @@ public class CustomFeignErrorDecoder implements ErrorDecoder {
                             errorResponse.getMessage()
                     );
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to decode Feign error response: {}", e.getMessage(), e);
             return defaultErrorDecoder.decode(methodKey, response);
         }

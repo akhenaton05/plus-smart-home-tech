@@ -1,15 +1,8 @@
 package ru.yandex.practicum.dto.util;
 
-//import feign.FeignException;
-//import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.dto.cart.exception.NoProductsInShoppingCartException;
@@ -19,9 +12,9 @@ import ru.yandex.practicum.dto.warehouse.exception.NoSpecifiedProductInWarehouse
 import ru.yandex.practicum.dto.warehouse.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.dto.warehouse.exception.SpecifiedProductAlreadyInWarehouseException;
 
-import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -95,7 +88,7 @@ public class GlobalExceptionHandler {
                 .details(details)
                 .build();
 
-//        log.error("Exception handled: {}", ex.getMessage(), ex);
+        log.error("Exception handled: {}", ex.getMessage(), ex);
         return ResponseEntity.status(status).body(response);
     }
 
@@ -115,7 +108,7 @@ public class GlobalExceptionHandler {
     }
 
     private ThrowableDto convertThrowable(Throwable throwable) {
-        if (throwable == null) return null;
+        if (Objects.isNull(throwable)) return null;
         return ThrowableDto.builder()
                 .message(throwable.getMessage())
                 .localizedMessage(throwable.getLocalizedMessage())
