@@ -3,6 +3,9 @@ spring:
     name: collector
   main:
     web-application-type: none
+  cloud:
+    config:
+      enabled: false
 
 grpc:
   server:

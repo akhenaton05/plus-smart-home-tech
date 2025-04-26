@@ -1,6 +1,9 @@
 spring:
   main:
     web-application-type: none
+  cloud:
+    config:
+      enabled: false
 
 logging:
   level:
