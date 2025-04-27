@@ -32,10 +32,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     public BookedProductsDto checkProducts(ShoppingCartDto dto) {
-        log.info("in");
         List<Product> availableProducts = warehouseRepository.findByProductIdIn(dto.getProducts().keySet());
-
-        log.info("available created");
 
         if (availableProducts.isEmpty()) {
             log.info("NoSpecifiedProductInWarehouseException");
@@ -70,7 +67,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                     insufficient
             );
         }
-        log.info("returned");
+        log.info("check completed");
         return convert(availableProducts);
     }
 
@@ -119,7 +116,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             weight += p.getWeight() * quantity;
             volume += quantity;
         }
-        log.info("converted");
+        log.info("converted successfully");
         return BookedProductsDto.builder()
                 .deliveryVolume(volume)
                 .deliveryWeight(weight)
