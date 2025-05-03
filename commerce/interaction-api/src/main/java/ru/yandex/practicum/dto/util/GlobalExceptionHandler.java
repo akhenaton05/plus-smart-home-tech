@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.dto.cart.exception.NoProductsInShoppingCartException;
 import ru.yandex.practicum.dto.cart.exception.NotAuthorizedUserException;
+import ru.yandex.practicum.dto.delivery.exception.NoDeliveryFoundException;
+import ru.yandex.practicum.dto.order.exception.NoOrderFoundException;
 import ru.yandex.practicum.dto.store.exception.ProductNotFoundException;
 import ru.yandex.practicum.dto.warehouse.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.dto.warehouse.exception.ProductInShoppingCartLowQuantityInWarehouse;
@@ -20,6 +22,16 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(NoOrderFoundException.class)
+    public ResponseEntity<ErrorResponse> handleOrderNotFound(NoOrderFoundException ex) {
+        return buildErrorResponse(ex, HttpStatus.NOT_FOUND, "Заказ не найден");
+    }
+
+    @ExceptionHandler(NoDeliveryFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDeliveryNotFound(NoDeliveryFoundException ex) {
+        return buildErrorResponse(ex, HttpStatus.NOT_FOUND, "Доставка не найдена");
+    }
 
     @ExceptionHandler(ServiceUnavailableException.class)
     public ResponseEntity<String> handleServiceUnavailableException(ServiceUnavailableException ex) {
