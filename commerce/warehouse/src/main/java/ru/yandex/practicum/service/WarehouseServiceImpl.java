@@ -27,8 +27,9 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
-    private WarehouseRepository warehouseRepository;
-    private OrderBookingRepository orderBookingRepository;
+    private final WarehouseRepository warehouseRepository;
+    private final OrderBookingRepository orderBookingRepository;
+    private final WarehouseMapper warehouseMapper;
 
     private static final String[] ADDRESSES = new String[]{"ADDRESS_1", "ADDRESS_2"};
     private static final String CURRENT_ADDRESS = ADDRESSES[Random.from(new SecureRandom()).nextInt(0, 2)];
@@ -78,7 +79,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional
     public void saveToWarehouse(NewProductInWarehouseRequest request) {
-        Product product = WarehouseMapper.requestToProduct(request);
+        Product product = warehouseMapper.requestToProduct(request);
         if (warehouseRepository.findByProductId(product.getProductId()).isPresent()) {
             throw new SpecifiedProductAlreadyInWarehouseException("Products is already exists", "Продукт уже зарегистрирован на складе");
         }

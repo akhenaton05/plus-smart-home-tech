@@ -25,6 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final ShoppingStoreClient storeClient;
     private final OrderClient orderClient;
+    private final PaymentMapper paymentMapper;
 
     private static final double TAX_RATE = 0.10;
     private static final double FIXED_DELIVERY_COST = 50.0;
@@ -68,10 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void successPayment(UUID paymentId) {
         log.info("Processing payment success for payment ID: {}", paymentId);
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new NoOrderFoundException(
-                        "Payment not found for ID: " + paymentId,
-                        "Оплата не найдена"));
+        Payment payment = findPayment(paymentId);
 
         payment.setState(PaymentState.SUCCESS);
         payment = paymentRepository.save(payment);
@@ -85,10 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void failedPayment(UUID paymentId) {
         log.info("Processing payment fail for payment ID: {}", paymentId);
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new NoOrderFoundException(
-                        "Payment not found for ID: " + paymentId,
-                        "Оплата не найдена"));
+        Payment payment = findPayment(paymentId);
 
         payment.setState(PaymentState.FAILED);
         payment = paymentRepository.save(payment);
@@ -121,7 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment = paymentRepository.save(payment);
         log.info("Payment created with ID: {} for order: {}", payment.getPaymentId(), dto.getOrderId());
 
-        return PaymentMapper.toDto(payment);
+        return paymentMapper.toDto(payment);
     }
 
     private void validateOrder(OrderDto dto) {
@@ -138,5 +133,12 @@ public class PaymentServiceImpl implements PaymentService {
                         "Количество товара должно быть положительным");
             }
         });
+    }
+
+    private Payment findPayment(UUID paymentId) {
+        return paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new NoOrderFoundException(
+                        "Payment not found for ID: " + paymentId,
+                        "Оплата не найдена"));
     }
 }

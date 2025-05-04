@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class StoreServiceImpl implements StoreService {
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     @Override
     public List<ProductDto> getProducts(ProductCategory productCategory, int page, int size, String sort) {
@@ -36,14 +37,14 @@ public class StoreServiceImpl implements StoreService {
                 : productRepository.findAll(pageable);
 
         return products.getContent().stream()
-                .map(ProductMapper::toDto)
+                .map(productMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ProductDto getProductsById(UUID id) {
         return productRepository.findById(id)
-                .map(ProductMapper::toDto)
+                .map(productMapper::toDto)
                 .orElseThrow(() -> new ProductNotFoundException(
                         "Product with ID " + id + " not found"
                 ));
@@ -51,8 +52,8 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public ProductDto saveProduct(ProductDto dto) {
-        Product product = ProductMapper.dtoToProduct(dto);
-        return ProductMapper.toDto(productRepository.save(product));
+        Product product = productMapper.dtoToProduct(dto);
+        return productMapper.toDto(productRepository.save(product));
     }
 
     @Override
@@ -61,7 +62,7 @@ public class StoreServiceImpl implements StoreService {
                 .orElseThrow(() -> new ProductNotFoundException(
                         "Product with ID " + dto.getProductId() + " not found"));
         update(product, dto);
-        return ProductMapper.toDto(productRepository.save(product));
+        return productMapper.toDto(productRepository.save(product));
     }
 
     @Override

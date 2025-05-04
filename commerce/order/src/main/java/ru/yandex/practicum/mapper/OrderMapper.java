@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class OrderMapper {
 
+    //Оставил ручной маппер для корректной передачи продуктов из сущности в мап
     public static OrderDto toDto(Order order) {
         return OrderDto.builder()
                 .orderId(order.getOrderId())

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.dto.delivery.dto.DeliveryCost;
 import ru.yandex.practicum.dto.delivery.dto.DeliveryDto;
 import ru.yandex.practicum.dto.delivery.dto.DeliveryState;
 import ru.yandex.practicum.dto.delivery.exception.NoDeliveryFoundException;
@@ -26,13 +27,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final OrderClient orderClient;
     private final WarehouseClient warehouseClient;
-
-    private static final double BASE_COST = 5.0;
-    private static final double WEIGHT_FACTOR = 0.3;
-    private static final double VOLUME_FACTOR = 0.2;
-    private static final double FRAGILE_FACTOR = 0.2;
-    private static final double ADDRESS_FACTOR = 0.2;
-
+    private final DeliveryMapper deliveryMapper;
 
     @Override
     @Transactional
@@ -40,10 +35,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         log.info("Validating delivery {}", dto);
         validateDeliveryDto(dto);
 
-        Delivery delivery = DeliveryMapper.toEntity(dto);
+        Delivery delivery = deliveryMapper.toEntity(dto);
+        delivery.setState(DeliveryState.CREATED);
 
         log.info("Delivery created and saved {}", delivery);
-        return DeliveryMapper.toDto(deliveryRepository.save(delivery));
+        return deliveryMapper.toDto(deliveryRepository.save(delivery));
     }
 
     @Override
@@ -52,7 +48,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         log.info("Sending request to warehouseClient for address");
         AddressDto warehouseAddress = warehouseClient.getWarehouseAddress();
 
-        double cost = BASE_COST;
+        double cost = DeliveryCost.BASE_COST.getValue();
 
         // Учёт адреса склада
         String warehouseName = warehouseAddress.getStreet().toUpperCase();
@@ -60,21 +56,21 @@ public class DeliveryServiceImpl implements DeliveryService {
             cost *= 1;
         } else if (warehouseName.contains("ADDRESS_2")) {
             cost *= 2;
-            cost += BASE_COST;
+            cost += DeliveryCost.BASE_COST.getValue();
         }
 
         if (dto.getFragile()) {
-            cost += cost * FRAGILE_FACTOR;
+            cost += cost * DeliveryCost.FRAGILE_FACTOR.getValue();
         }
 
-        cost += dto.getDeliveryWeight() * WEIGHT_FACTOR;
-        cost += dto.getDeliveryVolume() * VOLUME_FACTOR;
+        cost += dto.getDeliveryWeight() * DeliveryCost.WEIGHT_FACTOR.getValue();
+        cost += dto.getDeliveryVolume() * DeliveryCost.VOLUME_FACTOR.getValue();
 
         // Учёт адреса доставки
         Delivery delivery = findDelivery(dto.getOrderId());
 
         if (!delivery.getToAddress().getStreet().equalsIgnoreCase(warehouseAddress.getStreet())) {
-            cost += cost * ADDRESS_FACTOR;
+            cost += cost * DeliveryCost.ADDRESS_FACTOR.getValue();
         }
 
         log.info("Delivery cost for order {}: {}", dto.getOrderId(), cost);
