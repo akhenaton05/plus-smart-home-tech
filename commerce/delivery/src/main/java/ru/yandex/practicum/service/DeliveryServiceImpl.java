@@ -70,8 +70,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         cost += dto.getDeliveryWeight() * WEIGHT_FACTOR;
         cost += dto.getDeliveryVolume() * VOLUME_FACTOR;
 
-        // Учёт адреса доставки dto.getOrderId()
-        Delivery delivery = findDelivery(UUID.randomUUID());
+        // Учёт адреса доставки
+        Delivery delivery = findDelivery(dto.getOrderId());
 
         if (!delivery.getToAddress().getStreet().equalsIgnoreCase(warehouseAddress.getStreet())) {
             cost += cost * ADDRESS_FACTOR;
