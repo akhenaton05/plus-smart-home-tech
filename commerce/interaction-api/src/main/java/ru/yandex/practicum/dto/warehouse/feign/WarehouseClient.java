@@ -5,27 +5,39 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
 import ru.yandex.practicum.dto.config.FeignConfig;
-import ru.yandex.practicum.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.dto.warehouse.AddressDto;
-import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
-import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.dto.warehouse.*;
 
-@FeignClient(name = "warehouse", configuration = FeignConfig.class, fallbackFactory = WarehouseClientFallbackFactory.class)
+import java.util.Map;
+import java.util.UUID;
+
+@FeignClient(name = "warehouse", path = "/api/v1/warehouse", configuration = FeignConfig.class, fallbackFactory = WarehouseClientFallbackFactory.class)
 public interface WarehouseClient {
 
-    @PostMapping("/api/v1/warehouse/check")
+    @PostMapping("/check")
     @ResponseStatus(HttpStatus.OK)
     BookedProductsDto checkProducts(@RequestBody ShoppingCartDto dto);
 
-    @GetMapping("/api/v1/warehouse/address")
+    @GetMapping("/address")
     @ResponseStatus(HttpStatus.OK)
     AddressDto getWarehouseAddress();
 
-    @PutMapping("/api/v1/warehouse")
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
     void saveToWarehouse(@RequestBody NewProductInWarehouseRequest request);
 
-    @PostMapping("/api/v1/warehouse/add")
+    @PostMapping("/add")
     @ResponseStatus(HttpStatus.OK)
     void addProducts(@RequestBody AddProductToWarehouseRequest request);
+
+    @PostMapping("/assembly")
+    @ResponseStatus(HttpStatus.OK)
+    BookedProductsDto assemblyProductsForOrder(@RequestBody AssemblyProductsForOrderRequest request);
+
+    @PostMapping("/shipped")
+    @ResponseStatus(HttpStatus.OK)
+    void shippedToDelivery(@RequestBody ShippedToDeliveryRequest request);
+
+    @PostMapping("/return")
+    @ResponseStatus(HttpStatus.OK)
+    void returnProducts(@RequestBody Map<UUID, Long> returnProducts);
 }

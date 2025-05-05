@@ -47,6 +47,13 @@ public class CustomFeignErrorDecoder implements ErrorDecoder {
                                 errorResponse.getMessage(),
                                 errorResponse.getUserMessage()
                         );
+                    } else if (errorResponse.getMessage().contains("Insufficient quantity of products in stock") ||
+                            errorResponse.getUserMessage().contains("Недостаточное кол-во товаров на складе")) {
+                        log.info("Throwing ProductInShoppingCartLowQuantityInWarehouse");
+                        return new ProductInShoppingCartLowQuantityInWarehouse(
+                                errorResponse.getMessage(),
+                                errorResponse.getUserMessage()
+                        );
                     }
                     break;
                 case 401:

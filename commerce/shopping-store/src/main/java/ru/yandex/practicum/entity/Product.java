@@ -22,8 +22,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "product_id")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID productId;
 
     @NotNull

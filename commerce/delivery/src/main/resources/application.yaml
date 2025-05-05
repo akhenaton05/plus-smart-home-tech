@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: delivery
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: true
+        serviceId: config-server
+      retry:
+        use-random-policy: true
+        max-interval: 6000
+
+eureka:
+  client:
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
+    registryFetchIntervalSeconds: 5 # Уменьшаем интервал обновления кэша до 5 секунд

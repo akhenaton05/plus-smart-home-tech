@@ -1,19 +1,17 @@
 package ru.yandex.practicum.mapper;
 
+import org.mapstruct.*;
 import ru.yandex.practicum.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.entity.Product;
 
-public class WarehouseMapper {
+@Mapper(componentModel = "spring")
+public interface WarehouseMapper {
 
-    public static Product requestToProduct(NewProductInWarehouseRequest request) {
-        return Product.builder()
-                .productId(request.getProductId())
-                .width(request.getDimension().getWidth())
-                .height(request.getDimension().getHeight())
-                .depth(request.getDimension().getDepth())
-                .weight(request.getWight())
-                .isFragile(request.isFragile())
-                .quantity(0L)
-                .build();
-    }
+    @Mapping(source = "wight", target = "weight")
+    @Mapping(source = "fragile", target = "isFragile")
+    @Mapping(source = "dimension.width", target = "width")
+    @Mapping(source = "dimension.height", target = "height")
+    @Mapping(source = "dimension.depth", target = "depth")
+    @Mapping(constant = "0L", target = "quantity")
+    Product requestToProduct(NewProductInWarehouseRequest request);
 }
